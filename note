@@ -1,0 +1,18 @@
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-
+make mx6q_tqcorec_defconfig
+make imx6q-tqimx6q.dtb
+
+sudo dd if=/dev/zero of=/dev/sdb bs=512 seek=2 count=512
+sudo dd if=u-boot.imx of=/dev/sdb bs=512 seek=2
+
+cp arch/arm/boot/zImage /home/tftp/
+cp arch/arm/boot/dts/imx6q-tqimx6q.dtb /home/tftp/
+
+export ARCH=arm
+export CROSS_COMPILE=arm-linux-gnueabi-
+
+mx_v7_defconfig
+
+bootargs=console=ttymxc0,115200 video=mxcfb0:dev=lcd,CLAA-WVGA,if=RGB24,bpp=32 video=mxcfb1:off video=mxcfb2:off root=/dev/nfs rw ip=192.168.1.103:192.168.1.188:192.168.1.1:255.255.255.0 fec_mac=12:32:43:34:21:43 nfsroot=192.168.1.188:/home/vmuser/fs/rootfs,proto=tcp,nfsvers=3,nolock
+bootcmd=tftp 12000000 zImage; tftp 18000000 imx6q-tqimx6q.dtb; bootz 12000000 - 18000000
